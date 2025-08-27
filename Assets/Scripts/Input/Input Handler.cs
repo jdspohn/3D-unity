@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 
 public class InputHandler : MonoBehaviour
 {
-    InputContainer inputContainer = new InputContainer();
+    InputContainer _inputContainer = new InputContainer();
+    public InputContainer inputContainer { get { return _inputContainer; } }
     PlayerControls keys;
 
     private void Start()
@@ -12,25 +13,25 @@ public class InputHandler : MonoBehaviour
         keys = new PlayerControls();
         keys.Enable();
 
-        keys.Player.Move.performed += i => inputContainer.move = i.ReadValue<Vector2>();
-        keys.Player.Look.performed += i => inputContainer.look = i.ReadValue<Vector2>();
-        keys.Player.Jump.started += i => inputContainer.jump.pressed = i.ReadValue<float>() > 0 ? true : false;
+        keys.Player.Move.performed += i => _inputContainer.move = i.ReadValue<Vector2>();
+        keys.Player.Look.performed += i => _inputContainer.look = i.ReadValue<Vector2>();
+        keys.Player.Jump.started += i => _inputContainer.jump.pressed = i.ReadValue<float>() > 0 ? true : false;
     }
 
     private void Update()
     {
-        inputContainer.jump.held = GetButtonHeldStatus(keys.Player.Jump.phase);
+        _inputContainer.jump.held = GetButtonHeldStatus(keys.Player.Jump.phase);
         TestInput();
     }
 
     private void LateUpdate()
     {
-        inputContainer.ResetInputs();
+        _inputContainer.ResetInputs();
     }
 
     void TestInput()
     {
-        if (inputContainer.jump.held)
+        if (_inputContainer.jump.held)
         {
             Debug.Log("Jump held");
         }
