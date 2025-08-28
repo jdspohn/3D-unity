@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed;
     [SerializeField] float rotationSpeed;
 
+    float moveAmount;
+    Vector3 moveDirection;
+
     public void PlayerInit()
     {
         characterController = GetComponent<CharacterController>();
@@ -23,12 +26,12 @@ public class PlayerController : MonoBehaviour
     public void PlayerUpdate(InputContainer inputContainer, float delta)
     {
         HandleMovement(inputContainer, delta);
+        HandleRotation(delta);
     }
 
     void HandleMovement(InputContainer inputContainer, float delta)
     {
-        float moveAmount = inputContainer.move.magnitude;
-        Vector3 moveDirection;
+        moveAmount = inputContainer.move.magnitude;
 
         if (moveAmount >= .5f)
         {
@@ -45,5 +48,16 @@ public class PlayerController : MonoBehaviour
             moveDirection = Vector3.zero;
         }
         characterController.Move(moveDirection);
+    }
+
+    void HandleRotation(float delta)
+    {
+        if (moveDirection == Vector3.zero)
+        {
+            moveDirection = mTransform.forward;
+        }
+        Quaternion lookRotation = Quaternion.LookRotation(moveDirection);
+        Quaternion targetRotation = Quaternion.Slerp(mTransform.rotation, lookRotation, rotationSpeed * delta);
+        mTransform.rotation = new Quaternion(0, targetRotation.y, 0, targetRotation.w);
     }
 }
